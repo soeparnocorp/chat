@@ -1,60 +1,47 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>READTalk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#ff0000" />
-  
-  <link rel="stylesheet" href="css/normalize.css" />
-  <link rel="stylesheet" href="css/skeleton.css" />
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/ico" href="favicon.ico" />
-  <script src="/dist/index.js" type="module"></script>
-</head>
-<body>
-  <!-- HEADER -->
-  <header id="app-header">
-    <button id="back-button">←</button>
-    <div id="header-title">READTalk</div>
-    <div id="header-menu">
-      <button id="menu-button">⋮</button>
-      <div id="menu-dropdown">
-        <div class="menu-item" id="theme-toggle">🌓 Day/Night Mode</div>
-        <div class="menu-item" id="show-settings">⚙️ Settings</div>
-      </div>
-    </div>
-  </header>
+	<head>
+		<!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		<meta charset="utf-8" />
+		<title>READTalk</title>
+		<meta name="description" content="" />
+		<meta name="author" content="" />
 
-  <!-- MAIN CONTAINER -->
-  <div id="main-container">
-    <!-- ROSTER (LEFT) - Daftar Session ID dari OpenAuth -->
-    <div id="roster">
-      <div class="roster-header">Participants • <span id="participant-count">0</span> online</div>
-      <div id="roster-list"></div>
-    </div>
+		<!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- CHATLOG (RIGHT) -->
-    <div id="chatlog">
-      <div id="messages"></div>
-    </div>
-  </div>
+		<!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-  <!-- CHAT INPUT -->
-  <div id="chat-input-container">
-    <input type="text" id="chat-input" placeholder="Type a message..." class="my-input-text">
-    <button id="send-button">➤</button>
-  </div>
+		<!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/skeleton.css" />
+		<link rel="stylesheet" href="styles.css" />
 
-  <!-- SETTINGS MODAL (OPSIONAL) -->
-  <div id="settings-modal" style="display: none;">
-    <div class="modal-header">Settings</div>
-    <div class="modal-content">
-      <p>Device ID: <span id="device-id"></span></p>
-      <p>Connection: <span id="connection-state">Disconnected</span></p>
-      <p>Room: <span id="current-room"></span></p>
-    </div>
-    <button id="close-settings">Close</button>
-  </div>
-</body>
+		<!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		<link rel="icon" type="image/ico" href="favicon.ico" />
+		<script src="/dist/index.js" type="module"></script>
+	</head>
+	<body>
+		<!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		<div class="container" style="width: 95%; height: 100%">
+			<div class="row" style="height: 100%">
+				<div class="one-third column" style="margin-top: 25%">
+					<h4><b>READT</b>alk</h4>
+					<p>
+						sidebar area for Session ID account list auto by Email at here !
+					</p>
+				</div>
+				<div class="two-thirds column" id="root"></div>
+			</div>
+		</div>
+
+		<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+	</body>
 </html>
