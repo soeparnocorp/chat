@@ -1,4 +1,4 @@
-body,
+nobody,
 html {
 	height: 100%;
 	margin: 0;
@@ -65,13 +65,4 @@ html {
 .two-thirds.column {
   width: 65.3333333333% !important;
   margin-left: 4%;
-}
-.row {
-  display: flex;
-  height: 100%;
-}
-
-.one-third.column,
-.two-thirds.column {
-  float: none;
 }
