@@ -24,18 +24,18 @@
       }
     ]
   },
-  "d1_databases": {
-    "AUTH_DB": {
+  "d1_databases": [
+    {
       "binding": "AUTH_DB",
       "database_name": "readtalk_db"
     }
-  },
-  "kv_namespaces": {
-    "AUTH_STORAGE": {
+  ],
+  "kv_namespaces": [
+    {
       "binding": "AUTH_STORAGE",
       "id": "13a468e30cc84fe58ff6297d799050f2"
     }
-  },
+  ],
   "observability": {
     "enabled": true
   },
