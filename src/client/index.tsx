@@ -13,16 +13,11 @@ import { nanoid } from "nanoid";
 import { names, type ChatMessage, type Message } from "../shared";
 
 function App() {
+	const isMobile = window.innerWidth < 550;
+
 	const [name] = useState(names[Math.floor(Math.random() * names.length)]);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const { room } = useParams();
-
-	// ===============================
-	// MOBILE VIEW STATE (ADDED)
-	// ===============================
-	const isMobile = window.innerWidth < 550;
-	const [mobileView, setMobileView] = useState<"roster" | "chat">("roster");
-	// ===============================
 
 	const socket = usePartySocket({
 		party: "chat",
@@ -31,20 +26,19 @@ function App() {
 			const message = JSON.parse(evt.data as string) as Message;
 
 			if (message.type === "add") {
-				const foundIndex = messages.findIndex((m) => m.id === message.id);
-
-				if (foundIndex === -1) {
-					setMessages((messages) => [
-						...messages,
-						{
-							id: message.id,
-							content: message.content,
-							user: message.user,
-							role: message.role,
-						},
-					]);
-				} else {
-					setMessages((messages) => {
+				setMessages((messages) => {
+					const foundIndex = messages.findIndex((m) => m.id === message.id);
+					if (foundIndex === -1) {
+						return [
+							...messages,
+							{
+								id: message.id,
+								content: message.content,
+								user: message.user,
+								role: message.role,
+							},
+						];
+					} else {
 						return messages
 							.slice(0, foundIndex)
 							.concat({
@@ -54,8 +48,8 @@ function App() {
 								role: message.role,
 							})
 							.concat(messages.slice(foundIndex + 1));
-					});
-				}
+					}
+				});
 			} else if (message.type === "update") {
 				setMessages((messages) =>
 					messages.map((m) =>
@@ -75,68 +69,47 @@ function App() {
 		},
 	});
 
+	// ============================
+	// MOBILE → SIDEBAR ONLY
+	// ============================
+	if (isMobile) {
+		return (
+			<div className="container">
+				<div className="row">
+					<div className="twelve columns">
+						<h1>READTalk</h1>
+						<p>
+							sidebar area for Session ID account list auto by Email at
+							here !
+						</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// ============================
+	// DESKTOP → NORMAL TEMPLATE
+	// ============================
 	return (
-		<div className="container" style={{ width: "95%", height: "100%" }}>
-			<div className="row" style={{ height: "100%" }}>
-
-				{/* ========================= */}
-				{/* SIDEBAR / ROSTER */}
-				{/* ========================= */}
-				<div
-					className="one-third column"
-					style={{
-						marginTop: "25%",
-						display:
-							isMobile && mobileView === "chat"
-								? "none"
-								: "block",
-					}}
-				>
-					<h4><b>READT</b>alk</h4>
-					<p>Roster / Account Search Area</p>
-
-					<button
-						className="button u-full-width"
-						onClick={() => {
-							if (isMobile) setMobileView("chat");
-						}}
-					>
-						Open Chat
-					</button>
+		<div className="container">
+			<div className="row">
+				{/* SIDEBAR */}
+				<div className="three columns">
+					<h1>READTalk</h1>
+					<p>
+						sidebar area for Session ID account list auto by Email at
+						here !
+					</p>
 				</div>
 
-				{/* ========================= */}
 				{/* CHAT AREA */}
-				{/* ========================= */}
-				<div
-					className={isMobile ? "twelve columns" : "two-thirds column"}
-					style={{
-						display:
-							isMobile && mobileView === "roster"
-								? "none"
-								: "block",
-					}}
-				>
-
-					{/* MOBILE BACK BUTTON */}
-					{isMobile && mobileView === "chat" && (
-						<button
-							className="button u-full-width"
-							onClick={() => setMobileView("roster")}
-						>
-							← Back
-						</button>
-					)}
-
-					<div className="chat container">
+				<div className="nine columns">
+					<div className="chat">
 						{messages.map((message) => (
 							<div key={message.id} className="row message">
-								<div className="two columns user">
-									{message.user}
-								</div>
-								<div className="ten columns">
-									{message.content}
-								</div>
+								<div className="two columns user">{message.user}</div>
+								<div className="ten columns">{message.content}</div>
 							</div>
 						))}
 
@@ -144,11 +117,9 @@ function App() {
 							className="row"
 							onSubmit={(e) => {
 								e.preventDefault();
-
-								const content =
-									e.currentTarget.elements.namedItem(
-										"content",
-									) as HTMLInputElement;
+								const content = e.currentTarget.elements.namedItem(
+									"content",
+								) as HTMLInputElement;
 
 								const chatMessage: ChatMessage = {
 									id: nanoid(8),
@@ -157,10 +128,7 @@ function App() {
 									role: "user",
 								};
 
-								setMessages((messages) => [
-									...messages,
-									chatMessage,
-								]);
+								setMessages((messages) => [...messages, chatMessage]);
 
 								socket.send(
 									JSON.stringify({
@@ -179,24 +147,18 @@ function App() {
 								placeholder={`Hello ${name}! Type a message...`}
 								autoComplete="off"
 							/>
-							<button
-								type="submit"
-								className="send-message two columns"
-							>
+							<button type="submit" className="two columns">
 								Send
 							</button>
 						</form>
 					</div>
-
 				</div>
 			</div>
 		</div>
 	);
 }
 
-// ===============================
-// ROUTER (UNCHANGED)
-// ===============================
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(document.getElementById("root")!).render(
 	<BrowserRouter>
 		<Routes>
