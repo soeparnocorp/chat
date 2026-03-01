@@ -49,21 +49,3 @@ html {
 .my-input-text::placeholder {
 	color: #ccc;
 }
-/* ========== */
-.one-third.column {
-	background-color: #f8f9fa;  /* ganti dengan warna yang diinginkan */
-	padding: 20px;
-	height: 100%;
-	overflow-y: auto;
-}
-
-.one-third.column h4 {
-	color: #ff0000;
-	margin-bottom: 20px;
-}
-
-.one-third.column p {
-	color: #666;
-	font-size: 14px;
-	line-height: 1.5;
-}
