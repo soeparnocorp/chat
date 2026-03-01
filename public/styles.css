@@ -50,10 +50,10 @@ html {
 	color: #ccc;
 }
 
-.three.columns {
-  background: #fafafa;
+body {
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.nine.columns {
-  background: #ffffff;
+#root {
+  background: rgba(0, 0, 0, 0.02);
 }
