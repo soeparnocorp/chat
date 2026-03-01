@@ -1,128 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <title>READTalk Messenger</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/normalize.css" />
-  <link rel="stylesheet" href="css/skeleton.css" />
-  <link rel="stylesheet" href="styles.css" />
-  <!-- Favicon -->
-  <link rel="icon" type="image/ico" href="favicon.ico" />
-  <script type="module" src="/dist/index.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <!-- Inline CSS untuk tampilan dasar -->
   <style>
-    /* INLINE CHATROOM STYLES */
     * { box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; margin:0; height:100vh; }
-    #chatlog { position: fixed; top:0; bottom:32px; left:200px; right:0; overflow-y:auto; padding:8px; overflow-wrap:break-word; }
+    body { font-family: Arial, Helvetica, sans-serif; margin:0; padding:0; height:100vh; overflow:hidden; }
+
+    /* Layer 1 OpenAuth fullscreen */
+    #auth-layer {
+      position: fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:1000;
+      display:flex; justify-content:center; align-items:center; flex-direction:column;
+    }
+    #auth-layer p { margin:1em 0; text-align:center; }
+    #auth-layer button { padding:0.5em 1em; font-size:1em; cursor:pointer; }
+
+    /* Layer 2 ChatRoom */
+    #chat-layer { display:none; height:100%; width:100%; position:relative; }
+
+    /* Chatlog kanan */
+    #chatlog {
+      position: fixed; top:0; bottom:32px; left:0; right:200px;
+      overflow-y:auto; padding:8px; overflow-wrap:break-word; background:#f9f9f9;
+    }
     #chatlog span.username { font-weight:bold; }
-    #spacer { height: calc(100vh - 32px - 5em); }
-    #roster { position: fixed; right:0; top:0; bottom:32px; width:200px; font-weight:bold; padding:8px; border-left:1px solid #ccc; }
-    p { margin-top:0; margin-bottom:8px; }
-    p:last-of-type { margin:0; }
-    ::-webkit-scrollbar { display:none; }
-    #chat-input { position: fixed; width:100%; height:32px; bottom:0; left:0; border:none; border-top:none; padding-left:32px; outline:none; }
-    #chatroom::before { z-index:1; display:block; content:">"; position:fixed; bottom:0; left:0; width:32px; height:32px; line-height:32px; text-align:center; font-weight:bold; color:#888; -webkit-text-stroke-width:2px; }
-    @media(max-width:600px) { #roster{display:none;} #chatlog{left:0; right:0;} }
-    #auth-layer { position: fixed; top:0; left:0; right:0; bottom:0; background:white; z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column; text-align:center; }
-    #auth-layer button { font-size:1.2em; padding:0.5em 1em; margin-top:1em; }
+    #spacer { height:calc(100vh - 32px - 5em); }
+
+    /* Roster kiri */
+    #roster {
+      position: fixed; right:0; top:0; bottom:32px; width:200px; padding:8px; font-weight:bold; background:#eee;
+      overflow-y:auto;
+    }
+
+    /* Input bawah */
+    #chat-input {
+      position: fixed; width:100%; height:32px; bottom:0; left:0; border:none; border-top:1px solid #ccc; padding-left:32px; outline:none;
+    }
+    #chatroom::before {
+      z-index:1; display:block; content:">"; position:fixed; bottom:0; left:0; width:32px; height:32px;
+      line-height:32px; text-align:center; font-weight:bold; color:#888; -webkit-text-stroke-width:2px;
+    }
+
+    /* Responsive mobile */
+    @media(max-width:600px){
+      #roster { display:none; }
+      #chatlog { right:0; }
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- Sidebar placeholder -->
-  <div class="container" style="width:95%; height:100%">
-    <div class="row" style="height:100%">
-      <div class="one-third column" style="margin-top:25%">
-        <h4><b>READT</b>alk</h4>
-        <p>sidebar area for Session ID account list auto by Email at here!</p>
-      </div>
-      <div class="two-thirds column" id="root"></div>
-    </div>
-  </div>
+<!-- LAYER 1: OpenAuth fetch -->
+<div id="auth-layer">
+  <p>Fetching OpenAuth identity...</p>
+  <button id="retry-auth">Retry</button>
+</div>
 
-  <!-- Layer 1: OpenAuth fullscreen fetch -->
-  <div id="auth-layer">
-    <h3>Loading your identity...</h3>
-    <button id="auth-button">Login via OpenAuth</button>
-  </div>
-
-  <!-- Layer 2: ChatRoom -->
-  <form id="chatroom" action="/fake-form-action" style="display:none">
-    <div id="chatlog"><div id="spacer"></div></div>
-    <div id="roster"></div>
-    <input id="chat-input" placeholder="Type a message...">
-  </form>
+<!-- LAYER 2: ChatRoom -->
+<form id="chat-layer">
+  <div id="chatlog"><div id="spacer"></div></div>
+  <div id="roster"></div>
+  <input id="chat-input" placeholder="Type your message">
+</form>
 
 <script type="text/javascript">
-const authLayer = document.getElementById("auth-layer");
-const authButton = document.getElementById("auth-button");
-const chatroom = document.getElementById("chatroom");
-const chatlog = document.getElementById("chatlog");
-const roster = document.getElementById("roster");
-const chatInput = document.getElementById("chat-input");
-
+let userId = null;
 let currentWebSocket = null;
-let username = null;
-let roomname = location.hash.slice(1) || "public-room";
 let isAtBottom = true;
 
-// ===== Layer 1 OpenAuth fetch =====
-authButton.addEventListener("click", async () => {
+// Layer references
+const authLayer = document.querySelector("#auth-layer");
+const chatLayer = document.querySelector("#chat-layer");
+const chatlog = document.querySelector("#chatlog");
+const roster = document.querySelector("#roster");
+const chatInput = document.querySelector("#chat-input");
+const retryButton = document.querySelector("#retry-auth");
+
+const hostname = window.location.host || "chat.soeparnocorp.workers.dev";
+
+// =====================
+// LAYER 1: Fetch OpenAuth
+// =====================
+async function fetchOpenAuth() {
   try {
-    const res = await fetch("/fetch-openauth"); // layer 1 fetch ke OpenAuth
-    if (!res.ok) throw new Error("Auth failed");
-    const data = await res.json();
-    username = data.username || "anon_" + Math.floor(Math.random()*1000);
+    const resp = await fetch("https://" + hostname + "/api/auth");
+    if (!resp.ok) throw new Error("Auth fetch failed");
+    const data = await resp.json();
+    if (!data.user || !data.user.id) throw new Error("No user id returned");
+    userId = data.user.id;
+
+    // Success → tampilkan layer 2
     authLayer.style.display = "none";
-    chatroom.style.display = "block";
+    chatLayer.style.display = "block";
+
     startChat();
-  } catch(e) {
-    alert("OpenAuth login failed: " + e.message);
+  } catch(err) {
+    console.error("OpenAuth fetch error:", err);
+    authLayer.querySelector("p").innerText = "Failed to fetch identity. Please retry.";
   }
-});
-
-// ===== Layer 2 ChatRoom =====
-function startChat() {
-  chatInput.focus();
-  chatInput.addEventListener("keydown", e=>{
-    if(e.keyCode===13 && currentWebSocket){ 
-      e.preventDefault();
-      currentWebSocket.send(JSON.stringify({message:chatInput.value}));
-      chatInput.value="";
-      chatlog.scrollBy(0,1e8);
-    }
-  });
-
-  chatlog.addEventListener("scroll", ()=>{isAtBottom=chatlog.scrollTop+chatlog.clientHeight>=chatlog.scrollHeight;});
-
-  joinWebSocket();
 }
 
-function joinWebSocket() {
-  const wss = location.protocol==="https:"?"wss://":"ws://";
-  currentWebSocket = new WebSocket(wss + location.host + "/api/room/" + roomname + "/websocket");
-  currentWebSocket.addEventListener("open", ()=>currentWebSocket.send(JSON.stringify({name:username})));
+// Retry button
+retryButton.addEventListener("click", () => {
+  authLayer.querySelector("p").innerText = "Fetching OpenAuth identity...";
+  fetchOpenAuth();
+});
 
-  currentWebSocket.addEventListener("message", event=>{
-    const data = JSON.parse(event.data);
-    if(data.name && data.message) addChatMessage(data.name,data.message);
-    if(data.joined){ let p=document.createElement("p"); p.innerText=data.joined; roster.appendChild(p); }
-    if(data.quit){ Array.from(roster.childNodes).forEach(c=>{ if(c.innerText===data.quit) roster.removeChild(c); }); }
+// =====================
+// LAYER 2: ChatRoom
+// =====================
+function startChat() {
+  // Default room dari hash atau generate
+  let roomname = location.hash.length>1 ? location.hash.slice(1) : "room_"+Math.random().toString(36).substring(2,9);
+  location.hash = "#" + roomname;
+
+  chatInput.focus();
+
+  chatInput.addEventListener("keydown", e => {
+    if(e.keyCode==38) chatlog.scrollBy(0,-50);
+    else if(e.keyCode==40) chatlog.scrollBy(0,50);
+    else if(e.keyCode==33) chatlog.scrollBy(0,-chatlog.clientHeight+50);
+    else if(e.keyCode==34) chatlog.scrollBy(0,chatlog.clientHeight-50);
   });
 
-  currentWebSocket.addEventListener("close", ()=>setTimeout(joinWebSocket,5000));
-  currentWebSocket.addEventListener("error", ()=>setTimeout(joinWebSocket,5000));
+  chatInput.addEventListener("input", e => {
+    if(e.currentTarget.value.length>256) e.currentTarget.value=e.currentTarget.value.slice(0,256);
+  });
+
+  chatlog.addEventListener("scroll",()=>{ isAtBottom = chatlog.scrollTop+chatlog.clientHeight >= chatlog.scrollHeight; });
+
+  document.body.addEventListener("click",()=>{ if(window.getSelection().toString()=="") chatInput.focus(); });
+
+  joinWebSocket(roomname);
+}
+
+// =====================
+// WebSocket join
+// =====================
+function joinWebSocket(roomname){
+  const wss = location.protocol==="http:" ? "ws://" : "wss://";
+  let ws = new WebSocket(wss+hostname+"/api/room/"+roomname+"/websocket");
+  let rejoined=false;
+  let startTime=Date.now();
+
+  let rejoin=async()=>{
+    if(!rejoined){
+      rejoined=true;
+      currentWebSocket=null;
+      while(roster.firstChild) roster.removeChild(roster.firstChild);
+      let elapsed=Date.now()-startTime;
+      if(elapsed<10000) await new Promise(r=>setTimeout(r,10000-elapsed));
+      joinWebSocket(roomname);
+    }
+  }
+
+  ws.addEventListener("open",()=>{ currentWebSocket=ws; ws.send(JSON.stringify({name:userId})); });
+
+  ws.addEventListener("message",(event)=>{
+    let data=JSON.parse(event.data);
+    if(data.error) addChatMessage(null,"* Error: "+data.error);
+    else if(data.joined){
+      let p=document.createElement("p"); p.innerText=data.joined; roster.appendChild(p);
+    }
+    else if(data.quit){
+      for(let c of roster.childNodes){ if(c.innerText==data.quit){ roster.removeChild(c); break; } }
+    }
+    else if(data.ready){
+      addChatMessage(null,"* Welcome "+userId+" to #"+roomname);
+    }
+    else if(data.timestamp) addChatMessage(data.name,data.message);
+  });
+
+  ws.addEventListener("close",rejoin);
+  ws.addEventListener("error",rejoin);
 }
 
 function addChatMessage(name,text){
-  const p=document.createElement("p");
-  if(name){ const tag=document.createElement("span"); tag.className="username"; tag.innerText=name+": "; p.appendChild(tag); }
+  let p=document.createElement("p");
+  if(name){ let tag=document.createElement("span"); tag.className="username"; tag.innerText=name+": "; p.appendChild(tag); }
   p.appendChild(document.createTextNode(text));
   chatlog.appendChild(p);
   if(isAtBottom) chatlog.scrollBy(0,1e8);
 }
+
+// Start layer 1 fetch
+fetchOpenAuth();
 </script>
+
 </body>
 </html>
