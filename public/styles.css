@@ -49,6 +49,13 @@ html {
 .my-input-text::placeholder {
 	color: #ccc;
 }
-.three.columns {
-  background: rgba(0, 0, 0, 0.04);
+
+.row > .three.columns {
+  background: rgba(0, 0, 0, 0.05);
+  min-height: 100vh;
+}
+
+.row > .nine.columns {
+  background: rgba(0, 0, 0, 0.02);
+  min-height: 100vh;
 }
