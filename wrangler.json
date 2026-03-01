@@ -1,0 +1,43 @@
+{
+  "name": "chat",
+  "main": "src/server/index.ts",
+  "compatibility_date": "2025-10-08",
+  "migrations": [
+    {
+      "new_sqlite_classes": ["Chat"],
+      "tag": "v1"
+    }
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "build": {
+    "command": "esbuild src/client/index.tsx --bundle --splitting --format=esm --platform=browser --outdir=public/dist"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "Chat",
+        "name": "Chat"
+      }
+    ]
+  },
+  "d1_databases": {
+    "AUTH_DB": {
+      "binding": "AUTH_DB",
+      "database_name": "readtalk_db"
+    }
+  },
+  "kv_namespaces": {
+    "AUTH_STORAGE": {
+      "binding": "AUTH_STORAGE",
+      "id": "AUTH_STORAGE"
+    }
+  },
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true
+}
