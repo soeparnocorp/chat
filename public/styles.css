@@ -49,25 +49,3 @@ html {
 .my-input-text::placeholder {
 	color: #ccc;
 }
-@media (max-width: 600px) {
-  /* Sidebar full width */
-  .one-third.column {
-    width: 100%;
-    margin-top: 0 !important;
-  }
-  
-  /* Chatlog HIDDEN total */
-  .two-thirds.column {
-    display: none;
-  }
-  
-  /* Saat chat aktif, sidebar hilang, chatlog muncul */
-  body.chat-active .one-third.column {
-    display: none;
-  }
-  
-  body.chat-active .two-thirds.column {
-    display: block;
-    width: 100%;
-  }
-}
