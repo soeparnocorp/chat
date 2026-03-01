@@ -50,12 +50,10 @@ html {
 	color: #ccc;
 }
 
-.row > .three.columns {
-  background: rgba(0, 0, 0, 0.05);
-  min-height: 100vh;
+body {
+  background: rgba(0, 0, 0, 0.03);
 }
 
-.row > .nine.columns {
-  background: rgba(0, 0, 0, 0.02);
-  min-height: 100vh;
+#root {
+  background: rgba(255, 0, 0, 0.05);
 }
