@@ -36,6 +36,9 @@
       "id": "13a468e30cc84fe58ff6297d799050f2"
     }
   ],
+  "vars": {
+    "AUTH_CALLBACK": "/authorize"
+  },
   "observability": {
     "enabled": true
   },
