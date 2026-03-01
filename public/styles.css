@@ -51,9 +51,9 @@ html {
 }
 
 body {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 #root {
-  background: rgba(0, 0, 0, 0.01);
+  background: rgba(0, 0, 0, 0.03);
 }
