@@ -57,12 +57,31 @@ html {
 	box-sizing: border-box; 
 }
 
-/* Force sidebar layout even on mobile */
-.one-third.column {
-  width: 30.6666666667% !important;
-}
+/* Smartphone mode */
+@media (max-width: 549px) {
 
-.two-thirds.column {
-  width: 65.3333333333% !important;
-  margin-left: 4%;
+  .row {
+    display: block;
+  }
+
+  .one-third.column,
+  .two-thirds.column {
+    width: 100% !important;
+    margin-left: 0 !important;
+    height: 100vh;
+  }
+
+  /* Default: hiden chat */
+  .two-thirds.column {
+    display: none;
+  }
+
+  /* mode chat */
+  .mobile-chat-active .one-third.column {
+    display: none;
+  }
+
+  .mobile-chat-active .two-thirds.column {
+    display: block;
+  }
 }
