@@ -50,10 +50,10 @@ html {
 	color: #ccc;
 }
 
-body {
-  background: rgba(0, 0, 0, 0.03);
+.three.columns {
+  background: #f5f5f5;   /* Sidebar */
 }
 
-#root {
-  background: rgba(255, 0, 0, 0.05);
+.nine.columns {
+  background: #ffffff;   /* Chat */
 }
