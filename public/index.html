@@ -1,55 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <!-- Basic Page Needs -->
   <meta charset="utf-8" />
   <title>READTalk</title>
-  <meta name="description" content="" />
-  <meta name="author" content="" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#ff0000" />
-
-  <!-- CSS -->
+  
   <link rel="stylesheet" href="css/normalize.css" />
   <link rel="stylesheet" href="css/skeleton.css" />
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Favicon -->
   <link rel="icon" type="image/ico" href="favicon.ico" />
   <script src="/dist/index.js" type="module"></script>
 </head>
 <body>
-  <!-- CONNECTION STATUS BAR -->
-  <div id="connection-status"></div>
-
-  <!-- HEADER - READTalk Red -->
+  <!-- HEADER -->
   <header id="app-header">
     <button id="back-button">←</button>
     <div id="header-title">READTalk</div>
     <div id="header-menu">
       <button id="menu-button">⋮</button>
       <div id="menu-dropdown">
-        <div class="menu-item" id="theme-toggle">
-          <span>🌓</span>
-          <span>Day/Night Mode</span>
-        </div>
-        <div class="menu-item" id="show-settings">
-          <span>⚙️</span>
-          <span>Settings</span>
-        </div>
+        <div class="menu-item" id="theme-toggle">🌓 Day/Night Mode</div>
+        <div class="menu-item" id="show-settings">⚙️ Settings</div>
       </div>
     </div>
   </header>
 
   <!-- MAIN CONTAINER -->
   <div id="main-container">
-    <!-- ROSTER (LEFT) -->
+    <!-- ROSTER (LEFT) - Daftar Session ID dari OpenAuth -->
     <div id="roster">
       <div class="roster-header">Participants • <span id="participant-count">0</span> online</div>
       <div id="roster-list"></div>
     </div>
 
-    <!-- CHATLOG (RIGHT) - TEXT AREA YANG SALAH TETAP DI SINI -->
+    <!-- CHATLOG (RIGHT) -->
     <div id="chatlog">
       <div id="messages"></div>
     </div>
@@ -61,28 +46,7 @@
     <button id="send-button">➤</button>
   </div>
 
-  <!-- ROOM FORM -->
-  <div id="room-form">
-    <div class="form-content">
-      <h2>Welcome to READTalk</h2>
-      <input type="text" id="room-name" placeholder="Enter room name" maxlength="32">
-      <button id="go-public">Join Public Room</button>
-      <div class="or-divider">or</div>
-      <button id="go-private">Create Private Room</button>
-    </div>
-  </div>
-
-  <!-- NAME FORM -->
-  <div id="name-form" style="display: none;">
-    <div class="form-content">
-      <h2>Choose your name</h2>
-      <input type="text" id="name-input" placeholder="Your name" maxlength="32">
-      <button id="join-chat">Join READTalk</button>
-      <p style="margin-top: 20px; color: var(--text-secondary);">Private chat on the edge<br>with Cloudflare Durable Objects</p>
-    </div>
-  </div>
-
-  <!-- SETTINGS MODAL -->
+  <!-- SETTINGS MODAL (OPSIONAL) -->
   <div id="settings-modal" style="display: none;">
     <div class="modal-header">Settings</div>
     <div class="modal-content">
@@ -92,35 +56,5 @@
     </div>
     <button id="close-settings">Close</button>
   </div>
-
-  <script>
-    // Minimal JavaScript untuk toggle smartphone view
-    // (fungsi lainnya tetap dari file asli)
-    
-    // Back button functionality
-    document.getElementById('back-button').addEventListener('click', function() {
-      if (window.innerWidth <= 600) {
-        document.body.classList.remove('chat-active');
-        document.getElementById('header-title').textContent = 'READTalk';
-      }
-    });
-
-    // Roster item click untuk smartphone
-    function setupRosterClick() {
-      document.querySelectorAll('.roster-item').forEach(item => {
-        item.addEventListener('click', function() {
-          if (window.innerWidth <= 600) {
-            const name = this.querySelector('.roster-name').textContent;
-            document.body.classList.add('chat-active');
-            document.getElementById('header-title').textContent = `Chat with ${name}`;
-          }
-        });
-      });
-    }
-
-    // Observe untuk roster items yang ditambahkan kemudian
-    const observer = new MutationObserver(setupRosterClick);
-    observer.observe(document.getElementById('roster-list'), { childList: true, subtree: true });
-  </script>
 </body>
 </html>
