@@ -56,3 +56,22 @@ html {
 	padding: 20px;
 	box-sizing: border-box; 
 }
+
+/* Force sidebar layout even on mobile */
+.one-third.column {
+  width: 30.6666666667% !important;
+}
+
+.two-thirds.column {
+  width: 65.3333333333% !important;
+  margin-left: 4%;
+}
+.row {
+  display: flex;
+  height: 100%;
+}
+
+.one-third.column,
+.two-thirds.column {
+  float: none;
+}
