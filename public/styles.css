@@ -49,33 +49,25 @@ html {
 .my-input-text::placeholder {
 	color: #ccc;
 }
-
-/* ===== SMARTPHONE FIX ===== */
 @media (max-width: 600px) {
-  /* Ubah jadi column */
-  .container .row {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Sidebar full width, selalu tampil default */
+  /* Sidebar full width */
   .one-third.column {
     width: 100%;
     margin-top: 0 !important;
   }
   
-  /* Chatlog full width, HIDDEN default */
+  /* Chatlog HIDDEN total */
   .two-thirds.column {
-    width: 100%;
     display: none;
   }
   
-  /* Saat chat aktif: sidebar hidden, chatlog tampil */
+  /* Saat chat aktif, sidebar hilang, chatlog muncul */
   body.chat-active .one-third.column {
     display: none;
   }
   
   body.chat-active .two-thirds.column {
     display: block;
+    width: 100%;
   }
 }
