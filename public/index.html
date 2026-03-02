@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>READTalk Messenger</title>
+		<meta name="description" content="" />
+		<meta name="author" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="css/normalize.css" />
+		<link rel="stylesheet" href="css/skeleton.css" />
+		<link rel="stylesheet" href="styles.css" />
+		<link rel="icon" type="image/ico" href="favicon.ico" />
+		<script src="/dist/index.js" type="module"></script>
+	</head>
+	<body>
+		<div class="container" style="width: 95%; height: 100%">
+			<div class="row" style="height: 100%">
+				<div class="one-third column" style="margin-top: 25%">
+					<h4><b>READT</b>alk</h4>
+					<p id="sidebar-message">
+						sidebar area for Session ID account list auto by Email at here !
+					</p>
+				</div>
+				<div class="two-thirds column" id="root"></div>
+			</div>
+		</div>
+
+		<!-- 🔥 TAMBAHKAN SCRIPT INI UNTUK BACA CODE 🔥 -->
+		<script>
+			// Baca parameter dari URL
+			const urlParams = new URLSearchParams(window.location.search);
+			const code = urlParams.get('code');
+			const email = urlParams.get('email');
+			
+			// Cek localStorage dulu
+			let userEmail = localStorage.getItem('user_email');
+			
+			if (code) {
+				console.log('Code received:', code);
+				
+				// Opsi 1: Langsung simpan code
+				localStorage.setItem('auth_code', code);
+				
+				// Opsi 2: Kalo ada email dari parameter, simpan
+				if (email) {
+					localStorage.setItem('user_email', email);
+					userEmail = email;
+				} else {
+					// Opsi 3: Kalo cuma code, coba fetch user dari worker
+					fetch(`https://openauth.soeparnocorp.workers.dev/user?code=${code}`)
+						.then(res => res.json())
+						.then(data => {
+							if (data.email) {
+								localStorage.setItem('user_email', data.email);
+								updateSidebar(data.email);
+							}
+						})
+						.catch(err => console.log('Worker not supporting /user endpoint', err));
+				}
+			}
+			
+			// Update tampilan sidebar
+			function updateSidebar(email) {
+				const sidebar = document.getElementById('sidebar-message');
+				if (email) {
+					sidebar.innerHTML = `✅ Logged in as: <b>${email}</b><br>Session ID account list will appear here`;
+				}
+			}
+			
+			// Tampilkan email kalo udah login
+			if (userEmail) {
+				updateSidebar(userEmail);
+			}
+		</script>
+		<!-- 🔥 SAMPAI SINI 🔥 -->
+		
+	</body>
+</html>
